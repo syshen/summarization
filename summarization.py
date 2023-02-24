@@ -1,10 +1,9 @@
 import requests
-from readability import Document
-import streamlit as st
-from bs4 import BeautifulSoup
 import openai
-
 import torch
+import streamlit as st
+from readability import Document
+from bs4 import BeautifulSoup
 from transformers import AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
@@ -45,7 +44,7 @@ This website is designed to summarize articles from a given URL using OpenAI. To
 openai.api_key = st.text_input("OpenAI API Key")
 
 if openai.api_key:
-  article_url = st.text_input("URL", value="https://blog.samaltman.com/productivity")
+  article_url = st.text_input("Provide the URL for the article that requires a summary:")
   if article_url:
     with st.spinner("Loading article ..."):
       response = requests.get(article_url)
