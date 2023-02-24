@@ -82,5 +82,6 @@ if openai.api_key:
     with tab3:
       clicked = st.button("Translate to Mandarin")
       if clicked:
-        translation = summarize(f"Translate to Tranditional Chinese: {final_summary}", max_tokens=2000)
-        st.write(translation)
+        with st.spinner("Translating..."):
+          translation = summarize(f"Translate to Traditional Chinese: {final_summary}", max_tokens=2000)
+          st.write(translation)
