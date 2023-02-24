@@ -1,0 +1,6 @@
+readability-lxml
+openai
+torch
+transformers
+BeautifulSoup4
+streamlit >= 1.19.0
