@@ -41,6 +41,7 @@ def text_to_chunks(text, chunk_size=2000):
       else:
         chunk.extend(tokens)
       current_chunk_size += num_tokens
+  chunks.append(chunk)
 
   return chunks
 
@@ -75,12 +76,12 @@ def summarize_text(full_text, debug=False):
 
 @st.cache_data
 def translate_text(translating):
-  chunks = text_to_chunks(translating)
+  chunks = text_to_chunks(translating, chunk_size=500)
   translated = []
 
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
-    result = callOpenAI(f"Translate to Traditional Chinese: {text}", max_tokens=2000)
+    result = callOpenAI(f"Translate to Traditional Chinese: {text}", max_tokens=3500)
     st.write(result)
     translated.append(result)    
 
