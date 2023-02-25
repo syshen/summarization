@@ -9,22 +9,22 @@ from transformers import AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
 def count_tokens(text):
-    input_ids = torch.tensor(tokenizer.encode(text)).unsqueeze(0)
-    num_tokens = input_ids.shape[1]
-    return num_tokens
+  input_ids = torch.tensor(tokenizer.encode(text)).unsqueeze(0)
+  num_tokens = input_ids.shape[1]
+  return num_tokens
 
 def break_up_file_to_chunks(text, chunk_size=2000, overlap=100):
-    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+  tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
-    tokens = tokenizer.encode(text)
-    num_tokens = len(tokens)
+  tokens = tokenizer.encode(text)
+  num_tokens = len(tokens)
     
-    chunks = []
-    for i in range(0, num_tokens, chunk_size - overlap):
-        chunk = tokens[i:i + chunk_size]
-        chunks.append(chunk)
+  chunks = []
+  for i in range(0, num_tokens, chunk_size - overlap):
+    chunk = tokens[i:i + chunk_size]
+    chunks.append(chunk)
     
-    return chunks
+  return chunks
 
 def callOpenAI(prompt_request, max_tokens=500):
   response = openai.Completion.create(
@@ -57,7 +57,7 @@ def translate_text(full_text):
 
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
-    summary = callOpenAI(f"Translate to Traditional Chinese: {text}")
+    summary = callOpenAI(f"Translate to Traditional Chinese: {text}", max_tokens=2000)
     translated.append(summary)    
 
   return str(translated)
@@ -90,11 +90,10 @@ if openai.api_key:
           final_summary = summarize_text(text_string)
           final_summary
 
-    clicked = st.button("Translate to Mandarin")
+    clicked = st.checkbox("Translate to Mandarin")
     if clicked:
       with st.spinner("Translating..."):
         translation = translate_text(final_summary)
-        # translation = callOpenAI(f"Translate to Traditional Chinese: {final_summary}", max_tokens=2000)
 
       with st.expander("Mandarin Translation"): 
         st.write(translation)
