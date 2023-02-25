@@ -38,6 +38,7 @@ def callOpenAI(prompt_request, max_tokens=500):
   )
   return response.choices[0].text
 
+@st.cache_data
 def summarize_text(full_text):
   chunks = break_up_file_to_chunks(full_text)
   summaries = []
@@ -51,6 +52,7 @@ def summarize_text(full_text):
     final_summary = callOpenAI(f"Consolidate the summaries with paragraphs: {str(summaries)}", max_tokens=2000)
   return final_summary
 
+@st.cache_data
 def translate_text(full_text):
   chunks = break_up_file_to_chunks(full_text)
   translated = []
@@ -90,7 +92,7 @@ if openai.api_key:
           final_summary = summarize_text(text_string)
           final_summary
 
-    clicked = st.checkbox("Translate to Mandarin")
+    clicked = st.button("Translate to Mandarin")
     if clicked:
       with st.spinner("Translating..."):
         translation = translate_text(final_summary)
