@@ -78,13 +78,12 @@ def summarize_text(full_text):
 
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
-    st.write(text)
-    st.write("-----")
-    summary = callOpenAI(f"Summarize: {text}")
-    summaries.append(summary)    
+    summary = callOpenAI(f"Summarize: {text}", max_tokens=1500)
+    summaries.append(summary)
 
   if len(summaries) > 0:
-    final_summary = callOpenAI(f"Consolidate the summaries with paragraphs: {str(summaries)}", max_tokens=2000)
+    intermedia_summary = " ".join(summaries)
+    final_summary = callOpenAI(f"Consolidate the summaries: {intermedia_summary}", max_tokens=2000)
   return final_summary
 
 @st.cache_data
