@@ -79,6 +79,7 @@ def summarize_text(full_text):
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
     st.write(text)
+    st.write("-----")
     summary = callOpenAI(f"Summarize: {text}")
     summaries.append(summary)    
 
