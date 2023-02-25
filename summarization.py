@@ -14,13 +14,48 @@ def count_tokens(text):
   return num_tokens
 
 def text_to_chunks(text, chunk_size=2000, overlap=100):
-  tokens = tokenizer.encode(text)
-  num_tokens = len(tokens)
-    
+  punctuation = '.!?'
+
+  sentences = []
+  start = 0
+  for i, char in enumerate(text):
+    if char in punctuation:
+      sentences.append(text[start:i+1])
+      start = i+1
+
   chunks = []
-  for i in range(0, num_tokens, chunk_size - overlap):
-    chunk = tokens[i:i + chunk_size]
-    chunks.append(chunk)
+  chunk = None
+  current_chunk_size = 0
+  for i, sentence in enumerate(sentences):
+    tokens = tokenizer.encode(sentence)
+    num_tokens = len(tokens)
+    if (current_chunk_size + num_tokens) >= chunk_size:
+      current_chunk_size = num_tokens
+      chunks.append(chunk)
+      chunk = tokens
+    else:
+      if chunk is None:
+        chunk = tokens
+      else:
+        chunk.extend(tokens)
+      current_chunk_size += num_tokens
+
+
+  # paragraphs = []
+  # current_paragraph = ''
+  # for sentence in sentences:
+  #   current_paragraph += sentence.strip()
+  #   if sentence[-1] in '.!?':
+  #     paragraphs.append(current_paragraph)
+  #     current_paragraph = ''
+  
+  # tokens = tokenizer.encode(text)
+  # num_tokens = len(tokens)
+    
+  # chunks = []
+  # for i in range(0, num_tokens, chunk_size - overlap):
+  #   chunk = tokens[i:i + chunk_size]
+  #   chunks.append(chunk)
     
   return chunks
 
@@ -43,6 +78,7 @@ def summarize_text(full_text):
 
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
+    st.write(text)
     summary = callOpenAI(f"Summarize: {text}")
     summaries.append(summary)    
 
