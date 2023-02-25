@@ -13,9 +13,7 @@ def count_tokens(text):
   num_tokens = input_ids.shape[1]
   return num_tokens
 
-def break_up_file_to_chunks(text, chunk_size=2000, overlap=100):
-  tokenizer = AutoTokenizer.from_pretrained("gpt2")
-
+def text_to_chunks(text, chunk_size=2000, overlap=100):
   tokens = tokenizer.encode(text)
   num_tokens = len(tokens)
     
@@ -40,7 +38,7 @@ def callOpenAI(prompt_request, max_tokens=500):
 
 @st.cache_data
 def summarize_text(full_text):
-  chunks = break_up_file_to_chunks(full_text)
+  chunks = text_to_chunks(full_text)
   summaries = []
 
   for i, chunk in enumerate(chunks):
@@ -54,7 +52,7 @@ def summarize_text(full_text):
 
 @st.cache_data
 def translate_text(full_text):
-  chunks = break_up_file_to_chunks(full_text)
+  chunks = text_to_chunks(full_text)
   translated = []
 
   for i, chunk in enumerate(chunks):
