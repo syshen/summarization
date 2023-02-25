@@ -62,7 +62,7 @@ def translate_text(full_text):
     summary = callOpenAI(f"Translate to Traditional Chinese: {text}", max_tokens=2000)
     translated.append(summary)    
 
-  return str(translated)
+  return ''.join(translated)
 
 st.write("""
 This website is designed to summarize articles from a given URL using OpenAI. To begin with it, the first step is to obtain an OpenAI API key.
@@ -92,10 +92,18 @@ if openai.api_key:
           final_summary = summarize_text(text_string)
           final_summary
 
-    clicked = st.button("Translate to Mandarin")
-    if clicked:
+    bt1_clicked = st.button("Translate Origianl Text to Mandarin")
+    bt2_clicked = st.button("Translate Summary to Mandarin")
+
+    if bt1_clicked:
+      with st.spinner("Translating..."):
+        translation = translate_text(text_string)
+      with st.expander("Original Text Translation"): 
+        translation
+
+    if bt2_clicked:
       with st.spinner("Translating..."):
         translation = translate_text(final_summary)
 
-      with st.expander("Mandarin Translation"): 
-        st.write(translation)
+      with st.expander("Summary Translation"): 
+        translation
