@@ -52,7 +52,7 @@ def summarize_text(full_text):
 
 @st.cache_data
 def translate_text(full_text):
-  chunks = text_to_chunks(full_text)
+  chunks = text_to_chunks(full_text, overlap=0)
   translated = []
 
   for i, chunk in enumerate(chunks):
