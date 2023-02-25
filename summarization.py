@@ -26,7 +26,7 @@ def break_up_file_to_chunks(text, chunk_size=2000, overlap=100):
     
     return chunks
 
-def summarize(prompt_request, max_tokens=500):
+def callOpenAI(prompt_request, max_tokens=500):
   response = openai.Completion.create(
             model="text-davinci-003",
             prompt=prompt_request,
@@ -37,6 +37,30 @@ def summarize(prompt_request, max_tokens=500):
             presence_penalty=0
   )
   return response.choices[0].text
+
+def summarize_text(full_text):
+  chunks = break_up_file_to_chunks(full_text)
+  summaries = []
+
+  for i, chunk in enumerate(chunks):
+    text = tokenizer.decode(chunks[i])
+    summary = callOpenAI(f"Summarize: {text}")
+    summaries.append(summary)    
+
+  if len(summaries) > 0:
+    final_summary = callOpenAI(f"Consolidate the summaries with paragraphs: {str(summaries)}", max_tokens=2000)
+  return final_summary
+
+def translate_text(full_text):
+  chunks = break_up_file_to_chunks(full_text)
+  translated = []
+
+  for i, chunk in enumerate(chunks):
+    text = tokenizer.decode(chunks[i])
+    summary = callOpenAI(f"Translate to Traditional Chinese: {text}")
+    translated.append(summary)    
+
+  return str(translated)
 
 st.write("""
 This website is designed to summarize articles from a given URL using OpenAI. To begin with it, the first step is to obtain an OpenAI API key.
@@ -63,22 +87,14 @@ if openai.api_key:
 
     with st.spinner("Summarizing..."):
       with st.expander("Summary"):
-        chunks = break_up_file_to_chunks(text_string)
-        summaries = []
-
-        for i, chunk in enumerate(chunks):
-          text = tokenizer.decode(chunks[i])
-          # st.write(text)
-          summary = summarize(f"Summarize: {text}")
-          summaries.append(summary)    
-
-        if len(summaries) > 0:
-          final_summary = summarize(f"Consolidate the summaries with paragraphs: {str(summaries)}", max_tokens=2000)
-          st.subheader("Summary")
+          final_summary = summarize_text(text_string)
           final_summary
 
     clicked = st.button("Translate to Mandarin")
     if clicked:
       with st.spinner("Translating..."):
-        translation = summarize(f"Translate to Traditional Chinese: {final_summary}", max_tokens=2000)
+        translation = translate_text(final_summary)
+        # translation = callOpenAI(f"Translate to Traditional Chinese: {final_summary}", max_tokens=2000)
+
+      with st.expander("Mandarin Translation"): 
         st.write(translation)
