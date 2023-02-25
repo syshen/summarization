@@ -58,12 +58,11 @@ if openai.api_key:
       tokens_count = count_tokens(text_string)
       st.write(f"Number of tokens: {tokens_count}")
 
-    tab1, tab2, tab3 = st.tabs(["Original Text", "Summary", "Mandarin Translation"])
-    with tab1:
+    with st.expander("Original Text"):
       st.write(text_string)
 
-    with tab2:
-      with st.spinner("Summarizing..."):
+    with st.spinner("Summarizing..."):
+      with st.expander("Summary"):
         chunks = break_up_file_to_chunks(text_string)
         summaries = []
 
@@ -78,9 +77,8 @@ if openai.api_key:
           st.subheader("Summary")
           final_summary
 
-    with tab3:
-      clicked = st.button("Translate to Mandarin")
-      if clicked:
-        with st.spinner("Translating..."):
-          translation = summarize(f"Translate to Traditional Chinese: {final_summary}", max_tokens=2000)
-          st.write(translation)
+    clicked = st.button("Translate to Mandarin")
+    if clicked:
+      with st.spinner("Translating..."):
+        translation = summarize(f"Translate to Traditional Chinese: {final_summary}", max_tokens=2000)
+        st.write(translation)
