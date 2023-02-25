@@ -45,16 +45,19 @@ def text_to_chunks(text, chunk_size=2000, overlap=100):
   return chunks
 
 def callOpenAI(prompt_request, max_tokens=500):
-  response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt_request,
-            temperature=.5,
-            max_tokens=max_tokens,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-  )
-  return response.choices[0].text
+  try:
+    response = openai.Completion.create(
+              model="text-davinci-003",
+              prompt=prompt_request,
+              temperature=.5,
+              max_tokens=max_tokens,
+              top_p=1,
+              frequency_penalty=0,
+              presence_penalty=0
+    )
+    return response.choices[0].text
+  except:
+    st.error("Error", icon="🚨")
 
 @st.cache_data
 def summarize_text(full_text):
