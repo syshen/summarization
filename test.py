@@ -1,7 +1,6 @@
 import requests
 import openai
 import torch
-import streamlit as st
 from readability import Document
 from bs4 import BeautifulSoup
 from transformers import AutoTokenizer
@@ -31,7 +30,7 @@ def text_to_chunks(text, chunk_size=2000):
   for i, sentence in enumerate(sentences):
     tokens = tokenizer.encode(sentence)
     num_tokens = len(tokens)
-    if (current_chunk_size + num_tokens) >= chunk_size:
+    if (current_chunk_size + num_tokens) > chunk_size:
       current_chunk_size = num_tokens
       chunks.append(chunk)
       chunk = tokens
@@ -58,74 +57,60 @@ def callOpenAI(prompt_request, max_tokens=500):
     )
     return response.choices[0].text
   except:
-    st.error("Error", icon="🚨")
+    print("error")
 
-@st.cache_data
 def summarize_text(full_text, debug=False):
   chunks = text_to_chunks(full_text)
-  # st.write(f"Chunks: {len(chunks)}")
   summaries = []
 
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
-    summary = callOpenAI(f"{text}\n'tl;dr", max_tokens=2000)
+    summary = callOpenAI(f"Summarize: {text}", max_tokens=2000)
     summaries.append(summary)
 
   if len(summaries) > 0:
     final = callOpenAI(f"Consolidate the summaries: {str(summaries)}", max_tokens=2000)
   return final
 
-@st.cache_data
-def generate_tweet(text):
-  return callOpenAI(f"Generate a tweet for the text: {text}", max_tokens=70)
-
-@st.cache_data
 def translate_text(translating):
   chunks = text_to_chunks(translating, chunk_size=500)
   translated = []
 
   for i, chunk in enumerate(chunks):
     text = tokenizer.decode(chunks[i])
+    print(f"Translate: {text}")
     result = callOpenAI(f"Translate to Traditional Chinese: {text}", max_tokens=3500)
-    st.write(result)
+    print("----")
+    print(f"Result: {result}")
     translated.append(result)    
 
   return ''.join(translated)
 
-@st.cache_data
 def load_article(url):
   response = requests.get(url)
   doc = Document(response.text)
-  st.write(doc)
   soup = BeautifulSoup(doc.summary(), 'html.parser')
   text_string = soup.get_text()
 
   tokens_count = count_tokens(text_string)
   return doc.title(), text_string, tokens_count
 
-st.write("""
-This website is designed to summarize articles from a given URL using OpenAI. To begin with it, the first step is to obtain an OpenAI API key.
-""")
-openai.api_key = st.text_input("OpenAI API Key")
+openai.api_key = "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"
 
 if openai.api_key:
-  article_url = st.text_input("Provide the URL for the article that requires a summary:")
+  article_url = "https://medium.com/@pravse/the-maze-is-in-the-mouse-980c57cfd61a"
   if article_url:
     final_summary = None
     text_string = None
 
-    with st.spinner("Loading article ..."):
-      title, text_string, tokens_count = load_article(article_url)
-      st.subheader(title)
-      st.write(f"Number of tokens: {tokens_count}")
+    title, text_string, tokens_count = load_article(article_url)
+    print(f"Number of tokens: {tokens_count}")
 
-    with st.expander("Original Text"):
-      st.write(text_string)
+    # final_summary = summarize_text(text_string)
+    # print("Summary: ")
+    # print(final_summary)
+    translation = translate_text(text_string)
+    # print("Translation: ")
+    # print(translation)
 
-    with st.expander("Summary", expanded=True):
-      final_summary = summarize_text(text_string)
-      st.subheader("Summary")
-      st.write(final_summary)
-      tweet = generate_tweet(final_summary)
-      st.subheader("Tweet")
-      st.write(tweet)
+    #translation = translate_text(text_string)
